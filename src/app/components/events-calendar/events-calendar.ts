@@ -5,10 +5,11 @@ import { CalendarView, CalendarEvent, CalendarModule } from 'angular-calendar';
 import { startOfDay } from 'date-fns';
 
 import { CustomCalendarModule } from '../../shared/modules/calendar.module';
+import { Reminders } from '../reminders/reminders';
 
 @Component({
   selector: 'app-events-calendar',
-  imports: [CommonModule, CalendarModule, CustomCalendarModule],
+  imports: [Reminders, CommonModule, CalendarModule, CustomCalendarModule],
   templateUrl: './events-calendar.html',
   styleUrl: './events-calendar.css',
 })
