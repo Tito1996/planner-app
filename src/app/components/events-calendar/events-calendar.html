@@ -1,11 +1,10 @@
 <div class="events-calendar">
-  <div class="calendar-wrapper">
+  <div class="button-wrapper">
     <button (click)="view = CalendarView.Month">Mes</button>
     <button (click)="view = CalendarView.Week">Semana</button>
     <button (click)="view = CalendarView.Day">Día</button>
-
-    <br /><br />
-
+  </div>
+  <div class="calendar-wrapper">
     <mwl-calendar-week-view
       *ngIf="view === CalendarView.Week"
       [viewDate]="viewDate"
@@ -27,7 +26,7 @@
       (eventClicked)="handleEventClick($event.event)"
     ></mwl-calendar-day-view>
   </div>
-  <div class="event-wrapper">
+  <div class="event-wrapper" *ngIf="selectedEvent">
     <app-reminders></app-reminders>
   </div>
 </div>

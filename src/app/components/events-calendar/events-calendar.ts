@@ -25,6 +25,8 @@ export class EventsCalendar {
     },
   ];
 
+  selectedEvent: boolean = false;
+
   handleDayClick(date: Date) {
     const title = prompt('Título del evento:');
     if (title) {
