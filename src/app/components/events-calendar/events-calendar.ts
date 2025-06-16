@@ -1,15 +1,15 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 import { CalendarView, CalendarEvent, CalendarModule } from 'angular-calendar';
 import { startOfDay } from 'date-fns';
 
 import { CustomCalendarModule } from '../../shared/modules/calendar.module';
-import { Reminders } from '../reminders/reminders';
 
 @Component({
   selector: 'app-events-calendar',
-  imports: [Reminders, CommonModule, CalendarModule, CustomCalendarModule],
+  imports: [FormsModule, CommonModule, CalendarModule, CustomCalendarModule],
   templateUrl: './events-calendar.html',
   styleUrl: './events-calendar.css',
 })
@@ -18,39 +18,45 @@ export class EventsCalendar {
   CalendarView = CalendarView;
   viewDate: Date = new Date();
 
+  selectedDate: Date | null = null;
+  selectedDayEvents: CalendarEvent[] = [];
+
   events: CalendarEvent[] = [
     {
       start: startOfDay(new Date()),
       title: 'Evento de ejemplo',
+      color: { primary: '#1e90ff', secondary: '#D1E8FF' },
     },
   ];
 
-  selectedEvent: boolean = false;
+  newEvent = { title: '', time: '' };
 
-  handleDayClick(date: Date) {
-    const title = prompt('Título del evento:');
-    if (title) {
-      this.events = [
-        ...this.events,
-        {
-          start: startOfDay(date),
-          title,
-        },
-      ];
-    }
+  selectedEvent: boolean = false;
+  showForm = false;
+
+  onDayClick(day: any) {
+    this.selectedDate = day.date;
+    this.selectedDayEvents = this.events.filter(
+      (e) => e.start.toDateString() === day.date.toDateString()
+    );
+    this.newEvent = { title: '', time: '' };
+    this.showForm = !this.selectedDayEvents.length;
   }
 
-  handleEventClick(event: CalendarEvent) {
-    const action = confirm(`¿Eliminar "${event.title}"?`) ? 'delete' : 'edit';
+  addEvent() {
+    const [hours, minutes] = this.newEvent.time.split(':').map(Number);
+    const start = new Date(this.selectedDate!);
+    start.setHours(hours, minutes);
 
-    if (action === 'delete') {
-      this.events = this.events.filter((e) => e !== event);
-    } else {
-      const newTitle = prompt('Nuevo título:', event.title);
-      if (newTitle) {
-        event.title = newTitle;
-        this.events = [...this.events]; // fuerza actualización
-      }
-    }
+    this.events = [
+      ...this.events,
+      {
+        title: this.newEvent.title,
+        start,
+        color: { primary: '#66bb6a', secondary: '#C8E6C9' },
+      },
+    ];
+
+    this.onDayClick({ date: this.selectedDate }); // Recarga lista
   }
 }

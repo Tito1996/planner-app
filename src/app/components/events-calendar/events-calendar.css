@@ -6,23 +6,96 @@
   padding: 1rem;
   overflow: hidden;
   display: flex;
+  justify-content: space-between;
+  gap: 3rem;
 }
 
 .calendar-wrapper {
-  width: 70%;
-  max-width: 90rem;
-  max-height: 100%;
-  overflow-y: auto;
-  padding: 0 1rem;
-  margin: auto;
+  width: 100%;
+  max-width:48rem;
+  height:48rem;
+  border: 1px solid #ccc;
+  border-radius: 0.8rem;
+  overflow: hidden;
+  box-sizing: border-box;
+  background-color: white;
+}
+
+::ng-deep mwl-calendar-month-view {
+  height: 100%;
+}
+
+::ng-deep .cal-month-view .cal-day-cell {
+  min-height: 9rem;
+}
+
+::ng-deep .cal-days {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+::ng-deep .cal-row {
+  flex: 1;
+  display: flex;
+}
+
+::ng-deep .cal-cell {
+  flex: 1;
+  padding: 0.2rem;
+  box-sizing: border-box;
+  font-size: 1rem;
+}
+
+::ng-deep .cal-header {
+  font-size: 1rem;
+  text-align: center;
+}
+
+::ng-deep .cal-day-number {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.mini-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: start;
+  height: 100%;
+  position: relative;
+}
+
+.mini-day {
+  font-size: 1rem;
+}
+
+.event-dot {
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  margin-top: 0.2rem;
 }
 
 .event-wrapper {
-  width: 30%;
+  min-width: 40rem;
 }
 
-.button-wrapper {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.side-panel {
+  flex: 1;
+  background: #f8f8f8;
+  padding: 1rem;
+  border-radius: 8px;
+  overflow: auto;
+}
+
+form input {
+  display: block;
+  margin-bottom: 0.5rem;
+  width: 100%;
+  padding: 0.3rem;
+}
+
+form button {
+  padding: 0.4rem 1rem;
 }
