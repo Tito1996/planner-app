@@ -1,0 +1,80 @@
+<section class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+	<header class="mb-4 flex items-center justify-between gap-3">
+		<h2 class="text-lg font-semibold text-slate-800">Control semanal de rutinas</h2>
+		<span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
+			{{ routines().length }} rutinas
+		</span>
+	</header>
+
+	<div class="overflow-x-auto">
+		<table mat-table [dataSource]="routines()" class="min-w-[920px] w-full rounded-xl">
+			<ng-container matColumnDef="name">
+				<th mat-header-cell *matHeaderCellDef class="w-64 text-left">Rutina</th>
+				<td mat-cell *matCellDef="let row" class="font-medium text-slate-700">{{ row.name }}</td>
+			</ng-container>
+
+			@for (day of weekDays; track day.key) {
+			<ng-container [matColumnDef]="day.key">
+				<th mat-header-cell *matHeaderCellDef class="text-center">{{ day.label }}</th>
+				<td mat-cell *matCellDef="let row" class="text-center">
+					<mat-checkbox
+						[aria-label]="'Marcar ' + row.name + ' para ' + day.label"
+						[checked]="isChecked(row.id, day.key)"
+						(change)="toggleDay(row.id, day.key, $event.checked)"
+					/>
+				</td>
+			</ng-container>
+			}
+
+			<ng-container matColumnDef="actions">
+				<th mat-header-cell *matHeaderCellDef class="text-center">Acciones</th>
+				<td mat-cell *matCellDef="let row" class="text-center">
+					<div class="flex items-center justify-center gap-2">
+						<button
+							mat-icon-button
+							type="button"
+							aria-label="Editar rutina"
+							[disabled]="isConfigurationVisible()"
+							(click)="startEdit(row.id)"
+						>
+							<mat-icon aria-hidden="true">edit</mat-icon>
+						</button>
+						<button
+							mat-icon-button
+							type="button"
+							aria-label="Eliminar rutina"
+							[disabled]="isConfigurationVisible()"
+							(click)="removeRoutine(row.id)"
+						>
+							<mat-icon aria-hidden="true">delete</mat-icon>
+						</button>
+					</div>
+				</td>
+			</ng-container>
+
+			<tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+			<tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+		</table>
+	</div>
+
+	<div class="mt-4 flex justify-end">
+		<button
+			mat-icon-button
+			type="button"
+			aria-label="Crear rutina nueva"
+			[disabled]="isConfigurationVisible()"
+			(click)="openCreateRoutineForm()"
+		>
+			<mat-icon aria-hidden="true">add_circle</mat-icon>
+		</button>
+	</div>
+
+	@if (isConfigurationVisible()) {
+	<app-rutine-configuration
+		[mode]="activeFormMode()!"
+		[initialName]="editingRoutineName()"
+		(routineSaved)="onRoutineSaved($event)"
+		(formCancelled)="closeForm()"
+	/>
+	}
+</section>

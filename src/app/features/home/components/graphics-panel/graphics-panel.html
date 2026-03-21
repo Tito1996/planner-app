@@ -1,0 +1,86 @@
+<section class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+	<header class="mb-4">
+		<h2 class="text-lg font-semibold text-slate-800">Distribución semanal</h2>
+		<p class="text-sm text-slate-500">Rutinas activas por día de la semana</p>
+	</header>
+
+	@if (routines().length === 0) {
+		<p class="py-8 text-center text-slate-400">Aún no hay rutinas configuradas.</p>
+	} @else {
+		<svg
+			role="img"
+			aria-label="Gráfico de barras: rutinas activas por día de la semana"
+			viewBox="0 0 560 220"
+			class="w-full"
+			xmlns="http://www.w3.org/2000/svg"
+		>
+			<!-- Líneas de cuadrícula y etiquetas del eje Y -->
+			@for (tick of yTicks(); track tick.value) {
+				<line
+					[attr.x1]="layout.padLeft"
+					[attr.y1]="tick.y"
+					[attr.x2]="layout.chartEndX"
+					[attr.y2]="tick.y"
+					stroke="#e2e8f0"
+					stroke-width="1"
+				/>
+				<text
+					[attr.x]="layout.padLeft - 6"
+					[attr.y]="tick.y + 4"
+					font-size="11"
+					fill="#94a3b8"
+					text-anchor="end"
+				>{{ tick.value }}</text>
+			}
+
+			<!-- Eje Y -->
+			<line
+				[attr.x1]="layout.padLeft"
+				[attr.y1]="layout.padTop"
+				[attr.x2]="layout.padLeft"
+				[attr.y2]="layout.xAxisY"
+				stroke="#cbd5e1"
+				stroke-width="1"
+			/>
+
+			<!-- Eje X -->
+			<line
+				[attr.x1]="layout.padLeft"
+				[attr.y1]="layout.xAxisY"
+				[attr.x2]="layout.chartEndX"
+				[attr.y2]="layout.xAxisY"
+				stroke="#cbd5e1"
+				stroke-width="1"
+			/>
+
+			<!-- Barras y etiquetas -->
+			@for (bar of chartBars(); track bar.key) {
+				@if (bar.height > 0) {
+					<rect
+						[attr.x]="bar.x"
+						[attr.y]="bar.y"
+						[attr.width]="layout.barWidth"
+						[attr.height]="bar.height"
+						rx="4"
+						fill="#6366f1"
+					/>
+					<text
+						[attr.x]="bar.centerX"
+						[attr.y]="bar.y - layout.countOffsetY"
+						font-size="12"
+						fill="#4f46e5"
+						font-weight="600"
+						text-anchor="middle"
+					>{{ bar.count }}</text>
+				}
+				<text
+					[attr.x]="bar.centerX"
+					[attr.y]="layout.labelY"
+					font-size="11"
+					fill="#64748b"
+					text-anchor="middle"
+				>{{ bar.label }}</text>
+			}
+		</svg>
+	}
+</section>
