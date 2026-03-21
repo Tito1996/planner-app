@@ -31,7 +31,9 @@ export class RutineConfiguration {
     });
   }
 
-  submit(): void {
+  submit(event: SubmitEvent): void {
+    event.preventDefault();
+
     const routineName = this.nameControl.value.trim();
     if (!routineName) {
       this.nameControl.markAsTouched();
