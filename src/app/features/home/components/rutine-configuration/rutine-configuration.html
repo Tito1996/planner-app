@@ -7,7 +7,7 @@
 		}
 	</h3>
 
-	<form class="flex flex-col gap-3" (ngSubmit)="submit()">
+	<form class="flex flex-col gap-3" (submit)="submit($event)">
 		<mat-form-field appearance="outline" class="w-full">
 			<mat-label>Nombre de la rutina</mat-label>
 			<input matInput [formControl]="nameControl" maxlength="60" placeholder="Ej: Torso superior" />
