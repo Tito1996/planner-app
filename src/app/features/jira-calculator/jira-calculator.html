@@ -1,0 +1,97 @@
+<div class="card">
+  <h1>Calculadora de Imputaciones</h1>
+
+  <div class="field">
+    <label for="totalHours"><strong>Horas totales:</strong></label>
+    <input
+      id="totalHours"
+      type="number"
+      [ngModel]="totalHours()"
+      (ngModelChange)="totalHours.set($event)"
+    />
+  </div>
+
+  <div class="field">
+    <label for="vacationDays"><strong>Días de vacaciones:</strong></label>
+    <input
+      id="vacationDays"
+      type="number"
+      min="0"
+      [ngModel]="vacationDays()"
+      (ngModelChange)="vacationDays.set($event)"
+    />
+  </div>
+
+  @let current = result();
+  @if (current) {
+    <p>
+      <strong>Horas efectivas:</strong> {{ current.effectiveHours }} h ({{ current.totalHours }} h -
+      {{ current.vacationHours }} h de vacaciones)
+    </p>
+  }
+
+  <h3>Proyectos</h3>
+
+  @for (project of projects(); track $index) {
+    <div class="row">
+      <input
+        type="text"
+        [ngModel]="project.name"
+        (ngModelChange)="updateProject($index, { name: $event })"
+      />
+      <input
+        type="number"
+        [ngModel]="project.percentage"
+        (ngModelChange)="updateProject($index, { percentage: $event })"
+      />
+    </div>
+  }
+
+  <button type="button" (click)="calculate()">Calcular</button>
+
+  @if (error(); as message) {
+    <p class="error" role="alert">{{ message }}</p>
+  }
+
+  @if (current) {
+    <table>
+      <thead>
+        <tr>
+          <th>Proyecto</th>
+          <th>%</th>
+          <th>Horas</th>
+          <th>Días ({{ hoursPerDay }}h)</th>
+          <th>Horas resto</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of current.allocations; track $index) {
+          <tr>
+            <td>{{ item.name }}</td>
+            <td>{{ item.percentage }}%</td>
+            <td>{{ item.hours }}</td>
+            <td>{{ item.days }}</td>
+            <td>{{ item.remainingHours }}</td>
+          </tr>
+        }
+      </tbody>
+      <tfoot>
+        <tr>
+          <th colspan="2">Horas proyectos</th>
+          <th>{{ current.projectsHours }}</th>
+          <th colspan="2">{{ current.projectsHours / hoursPerDay | number: '1.2-2' }} jornadas</th>
+        </tr>
+        <tr>
+          <th colspan="2">Vacaciones</th>
+          <th>{{ current.vacationHours }}</th>
+          <th colspan="2">{{ current.vacationDays }} días</th>
+        </tr>
+        <tr>
+          <th colspan="2">TOTAL MES</th>
+          <th>{{ current.totalHours }}</th>
+          <th colspan="2">{{ current.totalHours / hoursPerDay | number: '1.2-2' }} jornadas</th>
+        </tr>
+      </tfoot>
+    </table>
+  }
+</div>
