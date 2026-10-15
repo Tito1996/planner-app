@@ -1,97 +1,127 @@
-<div class="card">
-  <h1>Calculadora de Imputaciones</h1>
+<mat-card class="card">
+  <mat-card-header>
+    <mat-card-title>Calculadora de Imputaciones</mat-card-title>
+  </mat-card-header>
 
-  <div class="field">
-    <label for="totalHours"><strong>Horas totales:</strong></label>
-    <input
-      id="totalHours"
-      type="number"
-      [ngModel]="totalHours()"
-      (ngModelChange)="totalHours.set($event)"
-    />
-  </div>
+  <mat-card-content>
+    <form [formGroup]="form" (ngSubmit)="calculate()" novalidate>
+      <div class="row">
+        <mat-form-field appearance="outline">
+          <mat-label>Horas totales</mat-label>
+          <input matInput type="number" min="0" formControlName="totalHours" />
+          @if (form.controls.totalHours.hasError('required')) {
+            <mat-error>Las horas totales son obligatorias.</mat-error>
+          } @else if (form.controls.totalHours.hasError('min')) {
+            <mat-error>Las horas totales no pueden ser negativas.</mat-error>
+          }
+        </mat-form-field>
 
-  <div class="field">
-    <label for="vacationDays"><strong>Días de vacaciones:</strong></label>
-    <input
-      id="vacationDays"
-      type="number"
-      min="0"
-      [ngModel]="vacationDays()"
-      (ngModelChange)="vacationDays.set($event)"
-    />
-  </div>
+        <mat-form-field appearance="outline">
+          <mat-label>Días de vacaciones</mat-label>
+          <input matInput type="number" min="0" formControlName="vacationDays" />
+          @if (form.controls.vacationDays.hasError('required')) {
+            <mat-error>Los días de vacaciones son obligatorios.</mat-error>
+          } @else if (form.controls.vacationDays.hasError('min')) {
+            <mat-error>Los días de vacaciones no pueden ser negativos.</mat-error>
+          }
+        </mat-form-field>
+      </div>
 
-  @let current = result();
-  @if (current) {
-    <p>
-      <strong>Horas efectivas:</strong> {{ current.effectiveHours }} h ({{ current.totalHours }} h -
-      {{ current.vacationHours }} h de vacaciones)
-    </p>
-  }
+      @let current = result();
+      @if (current) {
+        <p>
+          <strong>Horas efectivas:</strong> {{ current.effectiveHours }} h ({{
+            current.totalHours
+          }}
+          h - {{ current.vacationHours }} h de vacaciones)
+        </p>
+      }
 
-  <h3>Proyectos</h3>
+      <h3>Proyectos</h3>
 
-  @for (project of projects(); track $index) {
-    <div class="row">
-      <input
-        type="text"
-        [ngModel]="project.name"
-        (ngModelChange)="updateProject($index, { name: $event })"
-      />
-      <input
-        type="number"
-        [ngModel]="project.percentage"
-        (ngModelChange)="updateProject($index, { percentage: $event })"
-      />
-    </div>
-  }
+      <div formArrayName="projects">
+        @for (project of projects.controls; track $index) {
+          <div class="row" [formGroupName]="$index">
+            <mat-form-field appearance="outline" class="name">
+              <mat-label>Proyecto</mat-label>
+              <input matInput type="text" formControlName="name" />
+              @if (project.controls['name'].invalid) {
+                <mat-error>El nombre del proyecto es obligatorio.</mat-error>
+              }
+            </mat-form-field>
 
-  <button type="button" (click)="calculate()">Calcular</button>
-
-  @if (error(); as message) {
-    <p class="error" role="alert">{{ message }}</p>
-  }
-
-  @if (current) {
-    <table>
-      <thead>
-        <tr>
-          <th>Proyecto</th>
-          <th>%</th>
-          <th>Horas</th>
-          <th>Días ({{ hoursPerDay }}h)</th>
-          <th>Horas resto</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (item of current.allocations; track $index) {
-          <tr>
-            <td>{{ item.name }}</td>
-            <td>{{ item.percentage }}%</td>
-            <td>{{ item.hours }}</td>
-            <td>{{ item.days }}</td>
-            <td>{{ item.remainingHours }}</td>
-          </tr>
+            <mat-form-field appearance="outline" class="percentage">
+              <mat-label>Porcentaje</mat-label>
+              <input matInput type="number" min="0" formControlName="percentage" />
+              @if (project.controls['percentage'].hasError('required')) {
+                <mat-error>El porcentaje es obligatorio.</mat-error>
+              } @else if (project.controls['percentage'].hasError('min')) {
+                <mat-error>El porcentaje no puede ser negativo.</mat-error>
+              }
+            </mat-form-field>
+          </div>
         }
-      </tbody>
-      <tfoot>
-        <tr>
-          <th colspan="2">Horas proyectos</th>
-          <th>{{ current.projectsHours }}</th>
-          <th colspan="2">{{ current.projectsHours / hoursPerDay | number: '1.2-2' }} jornadas</th>
-        </tr>
-        <tr>
-          <th colspan="2">Vacaciones</th>
-          <th>{{ current.vacationHours }}</th>
-          <th colspan="2">{{ current.vacationDays }} días</th>
-        </tr>
-        <tr>
-          <th colspan="2">TOTAL MES</th>
-          <th>{{ current.totalHours }}</th>
-          <th colspan="2">{{ current.totalHours / hoursPerDay | number: '1.2-2' }} jornadas</th>
-        </tr>
-      </tfoot>
-    </table>
-  }
-</div>
+      </div>
+
+      @if (form.hasError('totalPercentageZero') && form.touched) {
+        <p class="error" role="alert">
+          <mat-icon>error</mat-icon> La suma de porcentajes debe ser mayor que 0.
+        </p>
+      }
+
+      @if (error(); as message) {
+        <p class="error" role="alert"><mat-icon>error</mat-icon> {{ message }}</p>
+      }
+
+      <button mat-flat-button type="submit" [disabled]="form.invalid && form.touched">
+        Calcular
+      </button>
+    </form>
+
+    @if (current) {
+      <table mat-table [dataSource]="current.allocations" class="results">
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Proyecto</th>
+          <td mat-cell *matCellDef="let item">{{ item.name }}</td>
+          <td mat-footer-cell *matFooterCellDef>Horas proyectos</td>
+        </ng-container>
+        <ng-container matColumnDef="percentage">
+          <th mat-header-cell *matHeaderCellDef>%</th>
+          <td mat-cell *matCellDef="let item">{{ item.percentage }}%</td>
+          <td mat-footer-cell *matFooterCellDef></td>
+        </ng-container>
+        <ng-container matColumnDef="hours">
+          <th mat-header-cell *matHeaderCellDef>Horas</th>
+          <td mat-cell *matCellDef="let item">{{ item.hours }}</td>
+          <td mat-footer-cell *matFooterCellDef>{{ current.projectsHours }}</td>
+        </ng-container>
+        <ng-container matColumnDef="days">
+          <th mat-header-cell *matHeaderCellDef>Días ({{ hoursPerDay }}h)</th>
+          <td mat-cell *matCellDef="let item">{{ item.days }}</td>
+          <td mat-footer-cell *matFooterCellDef>
+            {{ current.projectsHours / hoursPerDay | number: '1.2-2' }} jornadas
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="remainingHours">
+          <th mat-header-cell *matHeaderCellDef>Horas resto</th>
+          <td mat-cell *matCellDef="let item">{{ item.remainingHours }}</td>
+          <td mat-footer-cell *matFooterCellDef></td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        <tr mat-footer-row *matFooterRowDef="displayedColumns"></tr>
+      </table>
+
+      <dl class="summary">
+        <dt>Vacaciones</dt>
+        <dd>{{ current.vacationHours }} h ({{ current.vacationDays }} días)</dd>
+        <dt>TOTAL MES</dt>
+        <dd>
+          {{ current.totalHours }} h ({{ current.totalHours / hoursPerDay | number: '1.2-2' }}
+          jornadas)
+        </dd>
+      </dl>
+    }
+  </mat-card-content>
+</mat-card>
