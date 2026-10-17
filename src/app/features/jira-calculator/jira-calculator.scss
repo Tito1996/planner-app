@@ -1,0 +1,61 @@
+:host {
+  display: block;
+  max-width: 900px;
+  margin: 30px auto;
+  padding: 20px;
+}
+
+mat-card-title {
+  text-align: center;
+  width: 100%;
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+
+  mat-form-field {
+    flex: 1;
+  }
+
+  .name {
+    flex: 2;
+  }
+}
+
+.error {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--mat-sys-error, #c62828);
+}
+
+.results {
+  width: 100%;
+  margin-top: 20px;
+
+  th,
+  td {
+    text-align: center;
+  }
+
+  td[mat-footer-cell] {
+    font-weight: bold;
+  }
+}
+
+.summary {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 16px;
+  margin-top: 16px;
+
+  dt {
+    font-weight: bold;
+  }
+
+  dd {
+    margin: 0;
+  }
+}

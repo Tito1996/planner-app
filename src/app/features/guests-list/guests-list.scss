@@ -1,0 +1,31 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 100vh;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background-color: #faf8f5;
+  color: #1e293b;
+}
+
+.font-serif-title {
+  font-family: 'Playfair Display', serif;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f3ede4;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c5dbd0;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #729f8a;
+}

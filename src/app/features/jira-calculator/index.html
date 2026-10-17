@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora de Imputaciones</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        max-width: 900px;
+        margin: 30px auto;
+        padding: 20px;
+        background: #f5f5f5;
+    }
+
+    h1 {
+        text-align: center;
+    }
+
+    .card {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0,0,0,.1);
+    }
+
+    .row {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    input {
+        padding: 8px;
+    }
+
+    input[type="text"] {
+        flex: 2;
+    }
+
+    input[type="number"] {
+        flex: 1;
+    }
+
+    button {
+        background: #0078d4;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        cursor: pointer;
+        border-radius: 4px;
+        margin-top: 15px;
+    }
+
+    button:hover {
+        background: #005a9e;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        background: white;
+    }
+
+    th, td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: center;
+    }
+
+    th {
+        background: #0078d4;
+        color: white;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="card">
+    <h1>Calculadora de Imputaciones</h1>
+
+    <label><strong>Horas totales:</strong></label>
+    <input type="number" id="totalHoras" value="160">
+	<br><br>
+	<label><strong>Días de vacaciones:</strong></label>
+	<input type="number" id="diasVacaciones" value="0" min="0">
+
+	<p id="horasEfectivas"></p>
+
+    <h3>Proyectos</h3>
+
+    <div class="row">
+        <input type="text" value="MAX WIDGET" id="p1">
+        <input type="number" value="30" id="pct1">
+    </div>
+
+    <div class="row">
+        <input type="text" value="MAX SENIORS" id="p2">
+        <input type="number" value="40" id="pct2">
+    </div>
+
+    <div class="row">
+        <input type="text" value="MAX OPEX" id="p3">
+        <input type="number" value="26" id="pct3">
+    </div>
+
+    <div class="row">
+        <input type="text" value="IA" id="p4">
+        <input type="number" value="4" id="pct4">
+    </div>
+
+    <button onclick="calcular()">Calcular</button>
+
+    <div id="resultado"></div>
+</div>
+
+<script>
+function calcular() {
+
+    const totalHoras = parseInt(document.getElementById("totalHoras").value) || 0;
+    const diasVacaciones = parseInt(document.getElementById("diasVacaciones").value) || 0;
+
+    const horasVacaciones = diasVacaciones * 8;
+    const horasEfectivas = totalHoras - horasVacaciones;
+
+    if (horasEfectivas < 0) {
+        alert("Las vacaciones superan las horas totales.");
+        return;
+    }
+
+    document.getElementById("horasEfectivas").innerHTML =
+        `<strong>Horas efectivas:</strong> ${horasEfectivas} h
+         (${totalHoras} h - ${horasVacaciones} h de vacaciones)`;
+
+    const proyectos = [
+        {
+            nombre: document.getElementById("p1").value,
+            porcentaje: parseFloat(document.getElementById("pct1").value)
+        },
+        {
+            nombre: document.getElementById("p2").value,
+            porcentaje: parseFloat(document.getElementById("pct2").value)
+        },
+        {
+            nombre: document.getElementById("p3").value,
+            porcentaje: parseFloat(document.getElementById("pct3").value)
+        },
+        {
+            nombre: document.getElementById("p4").value,
+            porcentaje: parseFloat(document.getElementById("pct4").value)
+        }
+    ];
+
+    let sumaHoras = 0;
+
+    proyectos.forEach(p => {
+        p.horasExactas = horasEfectivas * p.porcentaje / 100;
+        p.horas = Math.floor(p.horasExactas);
+        p.decimal = p.horasExactas - p.horas;
+        sumaHoras += p.horas;
+    });
+
+    let diferencia = horasEfectivas - sumaHoras;
+
+    proyectos
+        .sort((a, b) => b.decimal - a.decimal)
+        .forEach(p => {
+            if (diferencia > 0) {
+                p.horas++;
+                diferencia--;
+            }
+        });
+
+    let html = `
+        <table>
+            <tr>
+                <th>Proyecto</th>
+                <th>%</th>
+                <th>Horas</th>
+                <th>Días (8h)</th>
+                <th>Horas resto</th>
+            </tr>
+    `;
+
+    let totalCalculado = 0;
+
+    proyectos.forEach(p => {
+
+        const dias = Math.floor(p.horas / 8);
+        const resto = p.horas % 8;
+
+        totalCalculado += p.horas;
+
+        html += `
+            <tr>
+                <td>${p.nombre}</td>
+                <td>${p.porcentaje}%</td>
+                <td>${p.horas}</td>
+                <td>${dias}</td>
+                <td>${resto}</td>
+            </tr>
+        `;
+    });
+
+    html += `
+        <tr>
+            <th colspan="2">Horas proyectos</th>
+            <th>${totalCalculado}</th>
+            <th colspan="2">${(totalCalculado/8).toFixed(2)} jornadas</th>
+        </tr>
+
+        <tr>
+            <th colspan="2">Vacaciones</th>
+            <th>${horasVacaciones}</th>
+            <th colspan="2">${diasVacaciones} días</th>
+        </tr>
+
+        <tr>
+            <th colspan="2">TOTAL MES</th>
+            <th>${totalHoras}</th>
+            <th colspan="2">${(totalHoras/8).toFixed(2)} jornadas</th>
+        </tr>
+        </table>
+    `;
+
+    document.getElementById("resultado").innerHTML = html;
+}
+</script>
+
+</body>
+</html>
