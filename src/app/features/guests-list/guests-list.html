@@ -1,0 +1,475 @@
+
+  <!-- Header Header / Branding -->
+  <header class="bg-white/80 backdrop-blur-md border-b border-wedding-200 sticky top-0 z-30 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-eucalyptus-100 border border-eucalyptus-300 flex items-center justify-center text-eucalyptus-600 shadow-inner">
+          <span class="text-xl">💒</span>
+        </div>
+        <div>
+          <h1 class="text-2xl font-serif-title font-bold text-slate-800 tracking-tight">Nuestra Boda</h1>
+          <p class="text-xs text-eucalyptus-600 font-medium tracking-wide uppercase">Gestor de Invitados e Invitaciones</p>
+        </div>
+      </div>
+
+      <!-- Header actions -->
+      <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+        <button type="button" (click)="openGuestModal()" class="bg-eucalyptus-600 hover:bg-eucalyptus-700 text-white text-sm font-medium px-4 py-2.5 rounded-xl transition duration-200 shadow-sm flex items-center gap-2">
+          <i class="fa-solid fa-user-plus"></i>
+          <span>Nuevo Invitado</span>
+        </button>
+        <div class="h-6 w-[1px] bg-slate-200 hidden sm:block"></div>
+        <button type="button" (click)="exportJSON()" class="bg-white hover:bg-wedding-50 text-slate-700 border border-slate-200 text-xs font-semibold px-3 py-2.5 rounded-xl transition flex items-center gap-1.5" title="Exportar a JSON">
+          <i class="fa-solid fa-file-export text-eucalyptus-600"></i>
+          <span class="hidden md:inline">Exportar</span>
+        </button>
+        <label class="bg-white hover:bg-wedding-50 text-slate-700 border border-slate-200 text-xs font-semibold px-3 py-2.5 rounded-xl transition flex items-center gap-1.5 cursor-pointer" title="Importar desde JSON">
+          <i class="fa-solid fa-file-import text-wedding-600"></i>
+          <span class="hidden md:inline">Importar</span>
+          <input type="file" id="importFileInput" accept=".json" class="hidden" (change)="importJSON($event)">
+        </label>
+        <button type="button" (click)="resetData()" class="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-xs font-semibold px-3 py-2.5 rounded-xl transition" title="Restablecer datos">
+          <i class="fa-solid fa-rotate-left"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 space-y-8">
+
+    <!-- KPI / Summary Cards -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+      
+      <!-- Card 1: Total personas -->
+      <div class="bg-white p-5 rounded-2xl border border-wedding-200/80 shadow-sm relative overflow-hidden">
+        <div class="absolute -right-2 -bottom-2 opacity-10 text-slate-800 text-7xl font-serif">👥</div>
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Total Personas</span>
+          <span class="p-2 bg-wedding-100 text-wedding-700 rounded-lg text-sm"><i class="fa-solid fa-users"></i></span>
+        </div>
+        <div class="flex items-baseline gap-2">
+          <span class="text-3xl font-bold font-serif-title text-slate-800">{{ kpis().totalGuests }}</span>
+          <span class="text-xs text-slate-500">invitados en lista</span>
+        </div>
+      </div>
+
+      <!-- Card 2: Invitaciones Físicas -->
+      <div class="bg-white p-5 rounded-2xl border border-wedding-200/80 shadow-sm relative overflow-hidden">
+        <div class="absolute -right-2 -bottom-2 opacity-10 text-slate-800 text-7xl">💌</div>
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Invitaciones Únicas</span>
+          <span class="p-2 bg-gold-light text-gold-dark rounded-lg text-sm"><i class="fa-solid fa-envelope"></i></span>
+        </div>
+        <div class="flex items-baseline gap-2">
+          <span class="text-3xl font-bold font-serif-title text-slate-800">{{ kpis().totalInvitations }}</span>
+          <span class="text-xs text-slate-500">sobres / tarjetas</span>
+        </div>
+      </div>
+
+      <!-- Card 3: Entregadas -->
+      <div class="bg-white p-5 rounded-2xl border border-wedding-200/80 shadow-sm relative overflow-hidden">
+        <div class="absolute -right-2 -bottom-2 opacity-10 text-eucalyptus-600 text-7xl">✅</div>
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Invitaciones Entregadas</span>
+          <span class="p-2 bg-eucalyptus-100 text-eucalyptus-700 rounded-lg text-sm"><i class="fa-solid fa-circle-check"></i></span>
+        </div>
+        <div class="flex items-baseline gap-2">
+          <span class="text-3xl font-bold font-serif-title text-eucalyptus-700">{{ kpis().deliveredInvitations }}</span>
+          <span class="text-xs text-slate-500">({{ kpis().pendingInvitations }} pendientes)</span>
+        </div>
+      </div>
+
+      <!-- Card 4: Porcentaje -->
+      <div class="bg-white p-5 rounded-2xl border border-wedding-200/80 shadow-sm relative overflow-hidden">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Progreso Entrega</span>
+          <span class="p-2 bg-blue-50 text-blue-600 rounded-lg text-sm"><i class="fa-solid fa-chart-pie"></i></span>
+        </div>
+        <div class="flex items-baseline justify-between mb-2">
+          <span class="text-3xl font-bold font-serif-title text-slate-800">{{ kpis().percentage }}%</span>
+        </div>
+        <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+          <div class="bg-eucalyptus-500 h-full rounded-full transition-all duration-500" [style.width.%]="kpis().percentage"></div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Filters & Search Bar -->
+    <section class="bg-white p-4 rounded-2xl border border-wedding-200/80 shadow-sm flex flex-col md:flex-row gap-4 justify-between items-center">
+      <div class="relative w-full md:w-80">
+        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+        <input type="text" [value]="search()" (input)="onSearch($event)" placeholder="Buscar por nombre o apellido..."
+               class="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-eucalyptus-400 focus:bg-white transition">
+      </div>
+
+      <div class="flex flex-wrap items-center gap-3 w-full md:w-auto justify-end">
+        <div class="flex items-center gap-2">
+          <label class="text-xs font-medium text-slate-500">Estado:</label>
+          <select [value]="statusFilter()" (change)="onStatusFilter($event)" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-eucalyptus-400 transition">
+            <option value="ALL">Todos los estados</option>
+            <option value="DELIVERED">Entregada</option>
+            <option value="PENDING">Pendiente de entregar</option>
+          </select>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <label class="text-xs font-medium text-slate-500">Grupo:</label>
+          <select (change)="onGroupFilter($event)" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-eucalyptus-400 transition">
+            <option value="ALL">Todos los grupos</option>
+            @for (group of groups(); track group) {
+              <option [value]="group" [selected]="group === groupFilter()">{{ group }}</option>
+            }
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- Guest Table / Cards List -->
+    <section class="bg-white rounded-2xl border border-wedding-200/80 shadow-sm overflow-hidden">
+      @if (filteredGuests().length === 0) {
+        <div class="py-16 text-center">
+          <div class="w-16 h-16 bg-wedding-100 text-wedding-600 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl">
+            <i class="fa-solid fa-users-slash"></i>
+          </div>
+          <h3 class="text-slate-800 font-medium text-base mb-1">No se encontraron invitados</h3>
+          <p class="text-slate-500 text-xs max-w-sm mx-auto mb-4">Intenta ajustar los filtros de búsqueda o añade un nuevo invitado a la lista.</p>
+          <button type="button" (click)="openGuestModal()" class="text-xs bg-eucalyptus-600 text-white font-medium px-4 py-2 rounded-xl">
+            + Añadir Invitado
+          </button>
+        </div>
+      } @else {
+        <!-- Table for medium & large screens -->
+        <div class="hidden md:block overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-wedding-50/60 border-b border-wedding-200 text-slate-600 uppercase text-[11px] font-semibold tracking-wider">
+                <th class="py-3.5 px-6">Invitado</th>
+                <th class="py-3.5 px-4">Grupo / Familia</th>
+                <th class="py-3.5 px-4">Teléfono</th>
+                <th class="py-3.5 px-4">Estado Invitación</th>
+                <th class="py-3.5 px-4">Invitación Compartida con</th>
+                <th class="py-3.5 px-6 text-right">Acciones</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 text-sm">
+              @for (guest of filteredGuests(); track guest.id) {
+                @let linked = linkedGuests(guest);
+                <tr class="hover:bg-slate-50/70 transition duration-150">
+                  <td class="py-3.5 px-6 font-medium text-slate-800">
+                    <div class="flex items-center gap-2.5">
+                      <div class="w-8 h-8 rounded-full bg-wedding-100 border border-wedding-200 text-wedding-800 flex items-center justify-center font-serif text-xs font-bold">
+                        {{ initials(guest) }}
+                      </div>
+                      <div>
+                        <div class="font-bold text-slate-800">{{ guest.firstName }} {{ guest.lastName }}</div>
+                        @if (guest.notes) {
+                          <div class="text-[11px] text-amber-700 flex items-center gap-1"><i class="fa-regular fa-note-sticky"></i> {{ guest.notes }}</div>
+                        }
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3.5 px-4 text-slate-600">
+                    <span class="inline-block px-2.5 py-1 rounded-lg text-xs bg-slate-100 text-slate-700 border border-slate-200/60 font-medium">
+                      {{ guest.group || 'Sin Grupo' }}
+                    </span>
+                  </td>
+                  <td class="py-3.5 px-4 text-slate-500 text-xs">
+                    @if (guest.phone) {
+                      <i class="fa-solid fa-phone text-slate-300 mr-1"></i>{{ guest.phone }}
+                    } @else {
+                      <span class="text-slate-300">-</span>
+                    }
+                  </td>
+                  <td class="py-3.5 px-4">
+                    <button type="button" (click)="toggleDelivered(guest)" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border transition"
+                      [class]="guest.delivered
+                        ? 'bg-eucalyptus-50 text-eucalyptus-700 border-eucalyptus-200 hover:bg-eucalyptus-100'
+                        : 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100'">
+                      <i class="fa-solid" [class]="guest.delivered ? 'fa-circle-check text-eucalyptus-600' : 'fa-clock text-amber-500'"></i>
+                      <span>{{ guest.delivered ? 'Entregada' : 'Pendiente' }}</span>
+                    </button>
+                  </td>
+                  <td class="py-3.5 px-4">
+                    @if (linked.length === 0) {
+                      <span class="text-slate-400 text-xs italic">Invitación individual</span>
+                    } @else {
+                      <div class="flex flex-wrap gap-1">
+                        @for (l of linked; track l.id) {
+                          <span class="inline-flex items-center gap-1 text-[11px] bg-eucalyptus-50 border border-eucalyptus-200 text-eucalyptus-800 px-2 py-0.5 rounded-md font-medium">
+                            <i class="fa-solid fa-link text-[9px] text-eucalyptus-500"></i> {{ l.firstName }} {{ l.lastName }}
+                          </span>
+                        }
+                      </div>
+                    }
+                  </td>
+                  <td class="py-3.5 px-6 text-right">
+                    <div class="flex items-center justify-end gap-1">
+                      <button type="button" (click)="openDetails(guest.id)" class="px-3 py-1.5 bg-wedding-100 hover:bg-wedding-200 text-wedding-800 text-xs font-semibold rounded-lg transition flex items-center gap-1">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <span>Detalles</span>
+                      </button>
+                      <button type="button" (click)="deleteGuest(guest)" class="p-1.5 text-slate-400 hover:text-red-600 transition rounded-lg hover:bg-red-50" title="Eliminar">
+                        <i class="fa-solid fa-trash-can"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Cards view for mobile screens -->
+        <div class="md:hidden divide-y divide-slate-100">
+          @for (guest of filteredGuests(); track guest.id) {
+            @let linked = linkedGuests(guest);
+            <div class="p-4 space-y-3">
+              <div class="flex items-start justify-between gap-2">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-9 h-9 rounded-full bg-wedding-100 border border-wedding-200 text-wedding-800 flex items-center justify-center font-serif text-sm font-bold">
+                    {{ initials(guest) }}
+                  </div>
+                  <div>
+                    <h4 class="font-bold text-slate-800 text-sm">{{ guest.firstName }} {{ guest.lastName }}</h4>
+                    <span class="text-[11px] text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">{{ guest.group || 'Sin Grupo' }}</span>
+                  </div>
+                </div>
+                <button type="button" (click)="toggleDelivered(guest)" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold border"
+                  [class]="guest.delivered
+                    ? 'bg-eucalyptus-50 text-eucalyptus-700 border-eucalyptus-200'
+                    : 'bg-amber-50 text-amber-700 border-amber-200'">
+                  <i class="fa-solid" [class]="guest.delivered ? 'fa-circle-check text-eucalyptus-600' : 'fa-clock text-amber-500'"></i>
+                  <span>{{ guest.delivered ? 'Entregada' : 'Pendiente' }}</span>
+                </button>
+              </div>
+
+              @if (guest.phone) {
+                <p class="text-xs text-slate-500"><i class="fa-solid fa-phone text-slate-300 mr-1"></i>{{ guest.phone }}</p>
+              }
+              @if (guest.notes) {
+                <p class="text-xs text-amber-800 bg-amber-50 p-2 rounded-lg"><i class="fa-regular fa-note-sticky mr-1"></i>{{ guest.notes }}</p>
+              }
+
+              @if (linked.length > 0) {
+                <div class="pt-1">
+                  <span class="text-[11px] text-slate-400 font-medium block mb-1">Compartida con:</span>
+                  <div class="flex flex-wrap gap-1">
+                    @for (l of linked; track l.id) {
+                      <span class="inline-flex items-center gap-1 text-[11px] bg-eucalyptus-50 border border-eucalyptus-200 text-eucalyptus-800 px-2 py-0.5 rounded-md font-medium">
+                        <i class="fa-solid fa-link text-[9px] text-eucalyptus-500"></i> {{ l.firstName }} {{ l.lastName }}
+                      </span>
+                    }
+                  </div>
+                </div>
+              }
+
+              <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
+                <button type="button" (click)="deleteGuest(guest)" class="px-3 py-1.5 text-xs text-red-600 hover:bg-red-50 rounded-lg transition">
+                  Eliminar
+                </button>
+                <button type="button" (click)="openDetails(guest.id)" class="px-3 py-1.5 bg-wedding-100 text-wedding-800 font-semibold text-xs rounded-lg transition flex items-center gap-1">
+                  <i class="fa-solid fa-circle-info"></i> Ver Detalles
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-400 mt-auto">
+    <div class="max-w-7xl mx-auto px-4">
+      Organizador de Bodas &bull; Gestión fácil e intuitiva de tu gran día 💕
+    </div>
+  </footer>
+
+  <!-- MODAL 1: Crear / Editar Invitado -->
+  @if (guestModalOpen()) {
+    <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+      <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden transform transition-all">
+        <div class="bg-wedding-50 px-6 py-4 border-b border-wedding-200 flex justify-between items-center">
+          <h3 class="font-serif-title text-lg font-bold text-slate-800">{{ modalTitle() }}</h3>
+          <button type="button" (click)="closeGuestModal()" class="text-slate-400 hover:text-slate-600 text-lg" aria-label="Cerrar">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <form [formGroup]="guestForm" (ngSubmit)="saveGuest()" class="p-6 space-y-4">
+          <div>
+            <label for="formFirstName" class="block text-xs font-semibold text-slate-600 mb-1">Nombre *</label>
+            <input type="text" id="formFirstName" formControlName="firstName" class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-eucalyptus-400 focus:outline-none" placeholder="ej. María">
+            @if (guestForm.controls.firstName.invalid && guestForm.controls.firstName.touched) {
+              <p class="text-[11px] text-red-600 mt-1">El nombre es obligatorio.</p>
+            }
+          </div>
+
+          <div>
+            <label for="formLastName" class="block text-xs font-semibold text-slate-600 mb-1">Apellidos</label>
+            <input type="text" id="formLastName" formControlName="lastName" class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-eucalyptus-400 focus:outline-none" placeholder="ej. García Pérez">
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="formPhone" class="block text-xs font-semibold text-slate-600 mb-1">Teléfono</label>
+              <input type="tel" id="formPhone" formControlName="phone" class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-eucalyptus-400 focus:outline-none" placeholder="600 000 000">
+            </div>
+
+            <div>
+              <label for="formGroup" class="block text-xs font-semibold text-slate-600 mb-1">Grupo / Familia</label>
+              <input type="text" id="formGroup" formControlName="group" list="groupSuggestions" class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-eucalyptus-400 focus:outline-none" placeholder="ej. Familia Novia">
+              <datalist id="groupSuggestions">
+                @for (group of groups(); track group) {
+                  <option [value]="group"></option>
+                }
+              </datalist>
+            </div>
+          </div>
+
+          <div>
+            <label for="formDelivered" class="block text-xs font-semibold text-slate-600 mb-1">Estado Invitación</label>
+            <select id="formDelivered" formControlName="delivered" class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-eucalyptus-400 focus:outline-none bg-white">
+              <option [ngValue]="false">Pendiente de entregar</option>
+              <option [ngValue]="true">Entregada</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="formNotes" class="block text-xs font-semibold text-slate-600 mb-1">Notas adicionales</label>
+            <textarea id="formNotes" formControlName="notes" rows="2" class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-eucalyptus-400 focus:outline-none" placeholder="Alergias, menú vegetariano, etc..."></textarea>
+          </div>
+
+          <div class="pt-4 flex justify-end gap-3 border-t border-slate-100">
+            <button type="button" (click)="closeGuestModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition">
+              Cancelar
+            </button>
+            <button type="submit" class="px-5 py-2 text-xs font-semibold text-white bg-eucalyptus-600 hover:bg-eucalyptus-700 rounded-xl transition shadow-sm">
+              Guardar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  <!-- MODAL 2: Detalles del Invitado y gestión de invitación compartida -->
+  @if (detailsGuest(); as guest) {
+    <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+      <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden transform transition-all">
+
+        <div class="bg-wedding-50 px-6 py-5 border-b border-wedding-200 flex justify-between items-start">
+          <div>
+            <span class="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-wedding-200 text-wedding-800 mb-1">
+              {{ guest.group || 'Sin grupo' }}
+            </span>
+            <h3 class="font-serif-title text-xl font-bold text-slate-800">{{ guest.firstName }} {{ guest.lastName }}</h3>
+            <p class="text-xs text-slate-500 mt-0.5"><i class="fa-solid fa-phone text-slate-400 mr-1"></i> {{ guest.phone || 'Sin teléfono' }}</p>
+          </div>
+          <button type="button" (click)="closeDetails()" class="text-slate-400 hover:text-slate-600 text-lg" aria-label="Cerrar">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div class="p-6 space-y-6">
+          <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full flex items-center justify-center text-lg"
+                [class]="guest.delivered ? 'bg-eucalyptus-100 text-eucalyptus-700' : 'bg-amber-100 text-amber-700'">
+                <i class="fa-solid" [class]="guest.delivered ? 'fa-check' : 'fa-clock'"></i>
+              </div>
+              <div>
+                <p class="text-xs text-slate-500 font-medium">Estado de Invitación</p>
+                <p class="text-sm font-bold" [class]="guest.delivered ? 'text-eucalyptus-700' : 'text-amber-700'">
+                  {{ guest.delivered ? 'Entregada' : 'Pendiente de entregar' }}
+                </p>
+              </div>
+            </div>
+
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" [checked]="guest.delivered" (change)="setDelivered(guest.id, !guest.delivered)" class="sr-only peer" aria-label="Invitación entregada">
+              <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-eucalyptus-600"></div>
+            </label>
+          </div>
+
+          <div class="text-xs bg-amber-50/60 border border-amber-200/60 text-amber-900 p-3.5 rounded-xl">
+            <span class="font-semibold block mb-0.5"><i class="fa-regular fa-note-sticky mr-1"></i> Notas:</span>
+            <span class="text-slate-700">{{ guest.notes || 'Sin notas adicionales.' }}</span>
+          </div>
+
+          <hr class="border-slate-100">
+
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <div>
+                <h4 class="text-sm font-bold text-slate-800 flex items-center gap-1.5">
+                  <i class="fa-solid fa-people-arrows text-eucalyptus-600"></i>
+                  <span>Invitación Compartida</span>
+                </h4>
+                <p class="text-[11px] text-slate-500">
+                  Selecciona las personas que comparten la misma invitación física. Al cambiar el estado de entrega, afectará a todo el grupo vinculado.
+                </p>
+              </div>
+            </div>
+
+            <div class="mt-3">
+              <span class="block text-xs font-semibold text-slate-600 mb-1.5">Acompañantes en esta misma invitación:</span>
+              <div class="flex flex-wrap gap-2 min-h-[38px] p-2 bg-slate-50 rounded-xl border border-slate-200">
+                @for (linked of detailsLinked(); track linked.id) {
+                  <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white border border-slate-200 text-xs font-semibold text-slate-700 shadow-sm">
+                    <i class="fa-solid fa-user-group text-eucalyptus-600 text-[10px]"></i>
+                    <span>{{ linked.firstName }} {{ linked.lastName }}</span>
+                    <button type="button" (click)="removeLink(guest.id, linked.id)" class="text-slate-400 hover:text-red-500 ml-1" title="Desvincular">
+                      <i class="fa-solid fa-xmark"></i>
+                    </button>
+                  </div>
+                } @empty {
+                  <span class="text-xs text-slate-400 italic p-1">No hay acompañantes vinculados a esta invitación.</span>
+                }
+              </div>
+            </div>
+
+            <div class="mt-3">
+              <label for="linkSelectGuest" class="block text-xs font-semibold text-slate-600 mb-1">Vincular a otro invitado de la lista:</label>
+              <div class="flex gap-2">
+                <select id="linkSelectGuest" (change)="onLinkTarget($event)" class="flex-1 bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-eucalyptus-400 focus:outline-none">
+                  <option value="">-- Seleccionar invitado --</option>
+                  @for (g of linkableGuests(); track g.id) {
+                    <option [value]="g.id" [selected]="g.id === linkTarget()">{{ g.firstName }} {{ g.lastName }} ({{ g.group || 'Sin Grupo' }})</option>
+                  }
+                </select>
+                <button type="button" (click)="addLink()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold rounded-xl transition">
+                  Vincular
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-slate-50 px-6 py-4 border-t border-slate-100 flex justify-between items-center">
+          <button type="button" (click)="editFromDetails()" class="text-xs text-eucalyptus-700 font-semibold hover:underline flex items-center gap-1">
+            <i class="fa-solid fa-pen-to-square"></i>
+            <span>Editar Datos</span>
+          </button>
+          <button type="button" (click)="closeDetails()" class="px-5 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-100 transition shadow-sm">
+            Cerrar
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Notification Toast Container -->
+  <div class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none" aria-live="polite">
+    @for (toast of toasts(); track toast.id) {
+      <div class="px-4 py-3 rounded-xl shadow-lg text-xs font-semibold flex items-center gap-2 transform transition-all duration-300 pointer-events-auto"
+        [class]="toastClass(toast.type)"
+        [class.opacity-0]="!toast.visible"
+        [class.translate-y-2]="!toast.visible">
+        <i class="fa-solid" [class]="toast.type === 'success' ? 'fa-circle-check' : 'fa-circle-info'"></i>
+        <span>{{ toast.message }}</span>
+      </div>
+    }
+  </div>

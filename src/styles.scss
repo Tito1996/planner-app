@@ -1,6 +1,32 @@
 @use 'tailwindcss';
 @import '@angular/material/prebuilt-themes/azure-blue.css';
 
+@theme {
+  --color-wedding-50: #faf8f5;
+  --color-wedding-100: #f3ede4;
+  --color-wedding-200: #e6d8c5;
+  --color-wedding-300: #d5bfa1;
+  --color-wedding-400: #c3a27b;
+  --color-wedding-500: #b2895b;
+  --color-wedding-600: #a07149;
+  --color-wedding-700: #83593c;
+  --color-wedding-800: #6c4935;
+  --color-wedding-900: #583c2e;
+  --color-eucalyptus-50: #f2f7f4;
+  --color-eucalyptus-100: #e1ede6;
+  --color-eucalyptus-200: #c5dbd0;
+  --color-eucalyptus-300: #9ebf3b;
+  --color-eucalyptus-400: #729f8a;
+  --color-eucalyptus-500: #52836e;
+  --color-eucalyptus-600: #3e6856;
+  --color-eucalyptus-700: #345447;
+  --color-eucalyptus-800: #2c443b;
+  --color-eucalyptus-900: #263932;
+  --color-gold-light: #f9f3e3;
+  --color-gold: #d4af37;
+  --color-gold-dark: #aa820a;
+}
+
 html,
 body {
 	margin: 0;
